@@ -1,0 +1,327 @@
+version: '3'
+services:
+  namenode:
+    build: .
+    container_name: namenode
+    hostname: namenode
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    volumes:
+      - namenode_data:/hadoop/dfs/name
+    networks:
+      - hadoop-net
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - HIVE_HOME=${HIVE_HOME}
+      - HBASE_HOME=${HBASE_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+
+  datanode1:
+    build: .
+    container_name: datanode1
+    hostname: datanode1
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HADOOP_HOME=${HADOOP_HOME}
+    volumes:
+      - datanode1_data:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - hadoop-net
+
+  datanode2:
+    build: .
+    container_name: datanode2
+    hostname: datanode2
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HADOOP_HOME=${HADOOP_HOME}
+    volumes:
+      - datanode2_data:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - hadoop-net
+
+  datanode3:
+    build: .
+    container_name: datanode3
+    hostname: datanode3
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HADOOP_HOME=${HADOOP_HOME}
+    volumes:
+      - datanode3_data:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - hadoop-net
+
+  datanode4:
+    build: .
+    container_name: datanode4
+    hostname: datanode4
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HADOOP_HOME=${HADOOP_HOME}
+    volumes:
+      - datanode4_data:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - hadoop-net
+
+  datanode5:
+    build: .
+    container_name: datanode5
+    hostname: datanode5
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HADOOP_HOME=${HADOOP_HOME}
+    volumes:
+      - datanode5_data:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - hadoop-net
+
+  datanode6:
+    build: .
+    container_name: datanode6
+    hostname: datanode6
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HADOOP_HOME=${HADOOP_HOME}
+    volumes:
+      - datanode6_data:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - hadoop-net
+
+  datanode7:
+    build: .
+    container_name: datanode7
+    hostname: datanode7
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HADOOP_HOME=${HADOOP_HOME}
+    volumes:
+      - datanode7_data:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - hadoop-net
+
+  datanode8:
+    build: .
+    container_name: datanode8
+    hostname: datanode8
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HADOOP_HOME=${HADOOP_HOME}
+    volumes:
+      - datanode8_data:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - hadoop-net
+
+  resourcemanager:
+    build: .
+    container_name: resourcemanager
+    hostname: resourcemanager
+    environment:
+      - YARN_CONF_yarn_resourcemanager_hostname=resourcemanager
+      - YARN_CONF_yarn_resourcemanager_address=resourcemanager:8032
+      - HADOOP_HOME=${HADOOP_HOME}
+    ports:
+      - "8088:8088"
+    depends_on:
+      - namenode
+    networks:
+      - hadoop-net
+
+  nodemanager1:
+    build: .
+    container_name: nodemanager1
+    hostname: nodemanager1
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop-net
+
+  nodemanager2:
+    build: .
+    container_name: nodemanager2
+    hostname: nodemanager2
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop-net
+
+  nodemanager3:
+    build: .
+    container_name: nodemanager3
+    hostname: nodemanager3
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop-net
+
+  nodemanager4:
+    build: .
+    container_name: nodemanager4
+    hostname: nodemanager4
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop-net
+
+  nodemanager5:
+    build: .
+    container_name: nodemanager5
+    hostname: nodemanager5
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop-net
+
+  nodemanager6:
+    build: .
+    container_name: nodemanager6
+    hostname: nodemanager6
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop-net
+
+  nodemanager7:
+    build: .
+    container_name: nodemanager7
+    hostname: nodemanager7
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop-net
+
+  nodemanager8:
+    build: .
+    container_name: nodemanager8
+    hostname: nodemanager8
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop-net
+
+  hbase:
+    build: .
+    container_name: hbase
+    hostname: hbase
+    environment:
+      - HBASE_CONF_DIR=${HBASE_HOME}/conf
+      - HBASE_HOME=${HBASE_HOME}
+    command: >
+      bash -c "
+      ${HBASE_HOME}/bin/start-hbase.sh
+      "
+    ports:
+      - "16010:16010"
+    networks:
+      - hadoop-net
+    depends_on:
+      - namenode
+      - datanode1
+      - datanode2
+      - datanode3
+      - datanode4
+      - datanode5
+      - datanode6
+      - datanode7
+      - datanode8
+
+  hive-metastore:
+    build: .
+    container_name: hive-metastore
+    hostname: hive-metastore
+    environment:
+      - HIVE_HOME=${HIVE_HOME}
+      - HADOOP_HOME=${HADOOP_HOME}
+      - HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+      - JAVA_HOME=${JAVA_HOME}
+    depends_on:
+      - namenode
+      - datanode1
+      - datanode2
+      - datanode3
+      - datanode4
+      - datanode5
+      - datanode6
+      - datanode7
+      - datanode8
+    command: >
+      bash -c "
+      ${HADOOP_HOME}/bin/hdfs dfs -mkdir -p /tmp &&
+      ${HADOOP_HOME}/bin/hdfs dfs -mkdir -p /user/hive/warehouse &&
+      ${HADOOP_HOME}/bin/hdfs dfs -chmod g+w /tmp &&
+      ${HADOOP_HOME}/bin/hdfs dfs -chmod g+w /user/hive/warehouse &&
+      ${HIVE_HOME}/bin/schematool -dbType derby -initSchema &&
+      ${HIVE_HOME}/bin/hive --service metastore
+      "
+    ports:
+      - "9083:9083"
+    networks:
+      - hadoop-net
+
+  hive-server:
+    build: .
+    container_name: hive-server
+    hostname: hive-server
+    environment:
+      - HIVE_HOME=${HIVE_HOME}
+      - HADOOP_HOME=${HADOOP_HOME}
+      - HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+      - JAVA_HOME=${JAVA_HOME}
+    depends_on:
+      - hive-metastore
+    command: >
+      bash -c "
+      ${HIVE_HOME}/bin/hive --service hiveserver2
+      "
+    ports:
+      - "10000:10000"
+    networks:
+      - hadoop-net
+
+volumes:
+  namenode_data:
+  datanode1_data:
+  datanode2_data:
+  datanode3_data:
+  datanode4_data:
+  datanode5_data:
+  datanode6_data:
+  datanode7_data:
+  datanode8_data:
+
+networks:
+  hadoop-net:
+    driver: bridge
