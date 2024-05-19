@@ -1,1 +1,8 @@
 .idea/
+venv/
+credentials.json
+token.json
+
+/dataset/*
+!/dataset/.gitkeep
+
