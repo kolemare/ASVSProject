@@ -19,7 +19,7 @@ source "$VENV_DIR/bin/activate"
 # Install necessary Python packages
 echo "Installing required Python packages..."
 pip install --upgrade pip
-pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib invoke
+pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib invoke pyarrow hdfs apache-airflow
 
 # Deactivate the virtual environment
 deactivate

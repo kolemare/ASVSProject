@@ -38,17 +38,22 @@ RUN curl -O https://archive.apache.org/dist/hbase/$HBASE_VERSION/hbase-$HBASE_VE
     mv hbase-$HBASE_VERSION /usr/local/hbase && \
     rm hbase-$HBASE_VERSION-bin.tar.gz
 
+# Create necessary directory for SSH
+RUN mkdir -p /run/sshd
+
 # Configure SSH
 RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && \
     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && \
     chmod 0600 ~/.ssh/authorized_keys && \
     echo "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" > ~/.ssh/config
 
-# Copy Hadoop configuration files (these should be prepared based on your setup)
-COPY core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
-COPY hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
-COPY mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
-COPY yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
+# Copy Hadoop, Hive, and HBase configuration files
+COPY config/hadoop/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
+COPY config/hadoop/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+COPY config/hadoop/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
+COPY config/hadoop/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
+COPY config/hive/hive-site.xml $HIVE_HOME/conf/hive-site.xml
+COPY config/hbase/hbase-site.xml $HBASE_HOME/conf/hbase-site.xml
 
 # Format HDFS namenode
 RUN $HADOOP_HOME/bin/hdfs namenode -format
