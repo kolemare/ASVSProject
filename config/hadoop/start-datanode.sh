@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start SSH service
-/usr/sbin/sshd
+service ssh start
 
 # Start Hadoop DataNode
 $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode

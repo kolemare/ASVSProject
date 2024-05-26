@@ -12,405 +12,15 @@ services:
     networks:
       - hadoop-net
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 10s
       retries: 5
       start_period: 5s
     restart: always
-
-  redis:
-    image: redis:7.2-bookworm
-    container_name: redis
-    expose:
-      - 6379
-    networks:
-      - hadoop-net
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 30s
-      retries: 50
-      start_period: 30s
-    restart: always
-
-  namenode:
-    build: .
-    container_name: namenode
-    hostname: namenode
-    ports:
-      - "9870:9870"
-      - "9000:9000"
-    volumes:
-      - namenode_data:/hadoop/dfs/name
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    networks:
-      - hadoop-net
-    environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - HIVE_HOME=${HIVE_HOME}
-      - HBASE_HOME=${HBASE_HOME}
-      - JAVA_HOME=${JAVA_HOME}
-    command: >
-      bash -c "
-      $HADOOP_HOME/bin/hdfs namenode -format -force &&
-      $HADOOP_HOME/sbin/hadoop-daemon.sh start namenode &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  datanode1:
-    build: .
-    container_name: datanode1
-    hostname: datanode1
-    environment:
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - datanode1_data:/hadoop/dfs/data
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - namenode
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  datanode2:
-    build: .
-    container_name: datanode2
-    hostname: datanode2
-    environment:
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - datanode2_data:/hadoop/dfs/data
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - namenode
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  datanode3:
-    build: .
-    container_name: datanode3
-    hostname: datanode3
-    environment:
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - datanode3_data:/hadoop/dfs/data
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - namenode
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  datanode4:
-    build: .
-    container_name: datanode4
-    hostname: datanode4
-    environment:
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - datanode4_data:/hadoop/dfs/data
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - namenode
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  datanode5:
-    build: .
-    container_name: datanode5
-    hostname: datanode5
-    environment:
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - datanode5_data:/hadoop/dfs/data
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - namenode
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  datanode6:
-    build: .
-    container_name: datanode6
-    hostname: datanode6
-    environment:
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - datanode6_data:/hadoop/dfs/data
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - namenode
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  datanode7:
-    build: .
-    container_name: datanode7
-    hostname: datanode7
-    environment:
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - datanode7_data:/hadoop/dfs/data
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - namenode
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  datanode8:
-    build: .
-    container_name: datanode8
-    hostname: datanode8
-    environment:
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - datanode8_data:/hadoop/dfs/data
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - namenode
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  resourcemanager:
-    build: .
-    container_name: resourcemanager
-    hostname: resourcemanager
-    environment:
-      - YARN_CONF_yarn_resourcemanager_hostname=resourcemanager
-      - YARN_CONF_yarn_resourcemanager_address=resourcemanager:8032
-      - HADOOP_HOME=${HADOOP_HOME}
-    ports:
-      - "8088:8088"
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - namenode
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/yarn-daemon.sh start resourcemanager &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  nodemanager1:
-    build: .
-    container_name: nodemanager1
-    hostname: nodemanager1
-    environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - resourcemanager
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/yarn-daemon.sh start nodemanager &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  nodemanager2:
-    build: .
-    container_name: nodemanager2
-    hostname: nodemanager2
-    environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - resourcemanager
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/yarn-daemon.sh start nodemanager &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  nodemanager3:
-    build: .
-    container_name: nodemanager3
-    hostname: nodemanager3
-    environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - resourcemanager
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/yarn-daemon.sh start nodemanager &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  nodemanager4:
-    build: .
-    container_name: nodemanager4
-    hostname: nodemanager4
-    environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - resourcemanager
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/yarn-daemon.sh start nodemanager &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  nodemanager5:
-    build: .
-    container_name: nodemanager5
-    hostname: nodemanager5
-    environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - resourcemanager
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/yarn-daemon.sh start nodemanager &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  nodemanager6:
-    build: .
-    container_name: nodemanager6
-    hostname: nodemanager6
-    environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - resourcemanager
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/yarn-daemon.sh start nodemanager &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  nodemanager7:
-    build: .
-    container_name: nodemanager7
-    hostname: nodemanager7
-    environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - resourcemanager
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/yarn-daemon.sh start nodemanager &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  nodemanager8:
-    build: .
-    container_name: nodemanager8
-    hostname: nodemanager8
-    environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-    depends_on:
-      - resourcemanager
-    networks:
-      - hadoop-net
-    command: >
-      bash -c "
-      $HADOOP_HOME/sbin/yarn-daemon.sh start nodemanager &&
-      tail -F $HADOOP_HOME/logs/hadoop-*.log
-      "
-
-  hbase:
-    build: .
-    container_name: hbase
-    hostname: hbase
-    environment:
-      - HBASE_CONF_DIR=${HBASE_HOME}/conf
-      - HBASE_HOME=${HBASE_HOME}
-    command: >
-      bash -c "
-      ${HBASE_HOME}/bin/start-hbase.sh
-      "
-    ports:
-      - "16010:16010"
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-      - ./config/hbase:/usr/local/hbase/conf
-    networks:
-      - hadoop-net
-    depends_on:
-      - namenode
-      - datanode1
-      - datanode2
-      - datanode3
-      - datanode4
-      - datanode5
-      - datanode6
-      - datanode7
-      - datanode8
+    deploy:
+      resources:
+        limits:
+          memory: 1g
 
   hive-metastore:
     build: .
@@ -449,30 +59,263 @@ services:
       - hadoop-net
 
   hive-server:
-    build: .
+    image: apache/hive:4.0.0
     container_name: hive-server
-    hostname: hive-server
     environment:
-      - HIVE_HOME=${HIVE_HOME}
+      SERVICE_NAME: hiveserver2
+      SERVICE_OPTS: >
+        -Dhive.metastore.uris=thrift://hive-metastore:9083
+      IS_RESUME: "true"
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    volumes:
+      - warehouse:/opt/hive/data/warehouse
+    networks:
+      - hadoop-net
+    depends_on:
+      - hive-metastore
+
+  namenode:
+    build: .
+    container_name: namenode
+    environment:
       - HADOOP_HOME=${HADOOP_HOME}
-      - HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
       - JAVA_HOME=${JAVA_HOME}
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-      - ./config/hive:/usr/local/hive/conf
-    depends_on:
-      - hive-metastore
-    command: >
-      bash -c "
-      ${HIVE_HOME}/bin/hive --service hiveserver2
-      "
     ports:
-      - "10000:10000"
+      - "9870:9870"
     networks:
       - hadoop-net
+    command: "/usr/local/hadoop/bin/hdfs namenode"
+
+  datanode1:
+    build: .
+    container_name: datanode1
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/hdfs datanode"
+
+  datanode2:
+    build: .
+    container_name: datanode2
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/hdfs datanode"
+
+  datanode3:
+    build: .
+    container_name: datanode3
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/hdfs datanode"
+
+  datanode4:
+    build: .
+    container_name: datanode4
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/hdfs datanode"
+
+  datanode5:
+    build: .
+    container_name: datanode5
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/hdfs datanode"
+
+  datanode6:
+    build: .
+    container_name: datanode6
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/hdfs datanode"
+
+  datanode7:
+    build: .
+    container_name: datanode7
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/hdfs datanode"
+
+  datanode8:
+    build: .
+    container_name: datanode8
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/hdfs datanode"
+
+  resourcemanager:
+    build: .
+    container_name: resourcemanager
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    ports:
+      - "8088:8088"
+      - "8031:8031"
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/yarn resourcemanager"
+
+  nodemanager1:
+    build: .
+    container_name: nodemanager1
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/yarn nodemanager"
+
+  nodemanager2:
+    build: .
+    container_name: nodemanager2
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/yarn nodemanager"
+
+  nodemanager3:
+    build: .
+    container_name: nodemanager3
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/yarn nodemanager"
+
+  nodemanager4:
+    build: .
+    container_name: nodemanager4
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/yarn nodemanager"
+
+  nodemanager5:
+    build: .
+    container_name: nodemanager5
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/yarn nodemanager"
+
+  nodemanager6:
+    build: .
+    container_name: nodemanager6
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/yarn nodemanager"
+
+  nodemanager7:
+    build: .
+    container_name: nodemanager7
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/yarn nodemanager"
+
+  nodemanager8:
+    build: .
+    container_name: nodemanager8
+    environment:
+      - HADOOP_HOME=${HADOOP_HOME}
+      - JAVA_HOME=${JAVA_HOME}
+    volumes:
+      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
+    networks:
+      - hadoop-net
+    command: "/usr/local/hadoop/bin/yarn nodemanager"
+
+  redis:
+    image: redis:7.2.5
+    container_name: redis
+    expose:
+      - 6379
+    networks:
+      - hadoop-net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 30s
+      retries: 50
+      start_period: 30s
+    restart: always
 
   airflow-webserver:
-    image: apache/airflow:2.9.1
+    build:
+      context: .
+      dockerfile: Airflow.dockerfile
     container_name: airflow-webserver
     restart: always
     environment:
@@ -489,16 +332,18 @@ services:
     ports:
       - "8080:8080"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
     volumes:
       - ./dags:/opt/airflow/dags
+      - ./scripts:/opt/airflow/scripts
       - ./logs:/opt/airflow/logs
       - ./config:/opt/airflow/config
       - ./plugins:/opt/airflow/plugins
+      - ./dataset:/opt/airflow/dataset
     command: webserver
     networks:
       - hadoop-net
@@ -511,7 +356,9 @@ services:
         condition: service_completed_successfully
 
   airflow-scheduler:
-    image: apache/airflow:2.9.1
+    build:
+      context: .
+      dockerfile: Airflow.dockerfile
     container_name: airflow-scheduler
     restart: always
     environment:
@@ -526,16 +373,18 @@ services:
       AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      test: [ "CMD", "curl", "--fail", "http://localhost:8974/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
     volumes:
       - ./dags:/opt/airflow/dags
+      - ./scripts:/opt/airflow/scripts
       - ./logs:/opt/airflow/logs
       - ./config:/opt/airflow/config
       - ./plugins:/opt/airflow/plugins
+      - ./dataset:/opt/airflow/dataset
     command: scheduler
     networks:
       - hadoop-net
@@ -548,7 +397,9 @@ services:
         condition: service_completed_successfully
 
   airflow-worker:
-    image: apache/airflow:2.9.1
+    build:
+      context: .
+      dockerfile: Airflow.dockerfile
     container_name: airflow-worker
     restart: always
     environment:
@@ -573,9 +424,11 @@ services:
       start_period: 30s
     volumes:
       - ./dags:/opt/airflow/dags
+      - ./scripts:/opt/airflow/scripts
       - ./logs:/opt/airflow/logs
       - ./config:/opt/airflow/config
       - ./plugins:/opt/airflow/plugins
+      - ./dataset:/opt/airflow/dataset
     command: celery worker
     networks:
       - hadoop-net
@@ -588,7 +441,9 @@ services:
         condition: service_completed_successfully
 
   airflow-init:
-    image: apache/airflow:2.9.1
+    build:
+      context: .
+      dockerfile: Airflow.dockerfile
     container_name: airflow-init
     entrypoint: /bin/bash
     command:
@@ -620,7 +475,7 @@ services:
           echo "At least 2 CPUs recommended. You have $${cpus_available}"
           warning_resources="true"
         fi
-        if (( disk_available < one_meg * 10 )); then
+        if (( disk available < one_meg * 10 )); then
           echo
           echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
           echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
@@ -662,12 +517,4 @@ networks:
 
 volumes:
   postgres_data:
-  namenode_data:
-  datanode1_data:
-  datanode2_data:
-  datanode3_data:
-  datanode4_data:
-  datanode5_data:
-  datanode6_data:
-  datanode7_data:
-  datanode8_data:
+  warehouse:

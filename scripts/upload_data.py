@@ -24,7 +24,7 @@ def upload_files_to_hdfs():
     hdfs_client = InsecureClient(hdfs_host, user=hdfs_user)
 
     # Local directory containing CSV files
-    local_dir = '/usr/local/airflow/dataset'
+    local_dir = '/opt/airflow/dataset'
     # HDFS directory where files will be uploaded
     hdfs_dir = '/data/climate'
 

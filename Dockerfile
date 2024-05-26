@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     rsync \
     curl \
     net-tools \
+    netcat \
     && apt-get clean
 
 # Download and extract Hadoop
@@ -43,6 +44,7 @@ COPY config/hadoop/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
 COPY config/hadoop/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 COPY config/hadoop/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
 COPY config/hadoop/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
+COPY config/hadoop/capacity-scheduler.xml $HADOOP_HOME/etc/hadoop/capacity-scheduler.xml
 COPY config/hive/hive-site.xml $HIVE_HOME/conf/hive-site.xml
 COPY config/hbase/hbase-site.xml $HBASE_HOME/conf/hbase-site.xml
 COPY config/hbase/regionservers $HBASE_HOME/conf/regionservers
@@ -61,10 +63,10 @@ RUN $HADOOP_HOME/bin/hdfs namenode -format
 RUN mkdir -p /run/sshd
 
 # Configure SSH
-RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && \
-    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && \
-    chmod 0600 ~/.ssh/authorized_keys && \
-    echo "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" > ~/.ssh/config
+RUN ssh-keygen -t rsa -P '' -f /root/.ssh/id_rsa && \
+    cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys && \
+    chmod 0600 /root/.ssh/authorized_keys && \
+    echo "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" > /root/.ssh/config
 
 # Start namenode and datanode scripts
 RUN chmod +x /usr/local/bin/start-namenode.sh /usr/local/bin/start-datanode.sh

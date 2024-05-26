@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 import os
 import sys
 
-
 # Add the scripts directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../scripts'))
 
@@ -19,23 +18,23 @@ default_args = {
 }
 
 dag = DAG(
-    'upload_to_hdfs',
+    'upload_sample_file_to_hdfs',
     default_args=default_args,
-    description='Convert CSV to Parquet and upload to HDFS',
+    description='Upload a sample text file to HDFS',
     schedule_interval=None,
 )
 
 
-def upload_files():
+def upload_sample_file():
     import sys
     sys.path.append('/usr/local/airflow/scripts')
-    from upload_data import upload_files_to_hdfs
-    upload_files_to_hdfs()
+    from upload_sample import upload_sample_to_hdfs
+    upload_sample_to_hdfs()
 
 
 t1 = PythonOperator(
-    task_id='upload_files_to_hdfs',
-    python_callable=upload_files,
+    task_id='upload_sample_to_hdfs',
+    python_callable=upload_sample_file,
     dag=dag,
 )
 
