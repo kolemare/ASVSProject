@@ -38,6 +38,25 @@ RUN curl -O https://archive.apache.org/dist/hbase/$HBASE_VERSION/hbase-$HBASE_VE
     mv hbase-$HBASE_VERSION /usr/local/hbase && \
     rm hbase-$HBASE_VERSION-bin.tar.gz
 
+# Copy Hadoop, Hive, and HBase configuration files
+COPY config/hadoop/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
+COPY config/hadoop/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+COPY config/hadoop/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
+COPY config/hadoop/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
+COPY config/hive/hive-site.xml $HIVE_HOME/conf/hive-site.xml
+COPY config/hbase/hbase-site.xml $HBASE_HOME/conf/hbase-site.xml
+COPY config/hbase/regionservers $HBASE_HOME/conf/regionservers
+COPY config/hbase/hbase-env.sh $HBASE_HOME/conf/hbase-env.sh
+COPY config/hadoop/start-namenode.sh /usr/local/bin/start-namenode.sh
+COPY config/hadoop/start-datanode.sh /usr/local/bin/start-datanode.sh
+
+# Add log4j.properties for HBase and Hadoop
+COPY config/hadoop/log4j.properties $HADOOP_HOME/etc/hadoop/log4j.properties
+COPY config/hbase/log4j.properties $HBASE_HOME/conf/log4j.properties
+
+# Format HDFS namenode
+RUN $HADOOP_HOME/bin/hdfs namenode -format
+
 # Create necessary directory for SSH
 RUN mkdir -p /run/sshd
 
@@ -47,16 +66,8 @@ RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && \
     chmod 0600 ~/.ssh/authorized_keys && \
     echo "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" > ~/.ssh/config
 
-# Copy Hadoop, Hive, and HBase configuration files
-COPY config/hadoop/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
-COPY config/hadoop/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
-COPY config/hadoop/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
-COPY config/hadoop/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
-COPY config/hive/hive-site.xml $HIVE_HOME/conf/hive-site.xml
-COPY config/hbase/hbase-site.xml $HBASE_HOME/conf/hbase-site.xml
+# Start namenode and datanode scripts
+RUN chmod +x /usr/local/bin/start-namenode.sh /usr/local/bin/start-datanode.sh
 
-# Format HDFS namenode
-RUN $HADOOP_HOME/bin/hdfs namenode -format
-
-# Start SSH service
-CMD ["/usr/sbin/sshd", "-D"]
+# Start SSH service and the NameNode or DataNode
+CMD ["/usr/local/bin/start-namenode.sh"]

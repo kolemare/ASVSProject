@@ -6,3 +6,5 @@ token.json
 /dataset/*
 !/dataset/.gitkeep
 
+dags/__pycache__/
+logs/
