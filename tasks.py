@@ -44,7 +44,7 @@ def google_drive_download():
     dataset_dir = os.path.join(script_dir, 'dataset')
     if not os.path.exists(dataset_dir):
         os.makedirs(dataset_dir)
-    file_name = os.path.join(dataset_dir, 'archive.zip')
+    file_name = os.path.join(dataset_dir, 'weatherdata.zip')
 
     SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
     creds = None
@@ -65,7 +65,7 @@ def google_drive_download():
     print("Authenticated successfully.")
     service = build('drive', 'v3', credentials=creds)
 
-    file_id = '1r5kwpE_3ngzBHBixWLNkbZV8H21XdTkX'
+    file_id = '1RPQaeHixdGQ2_CmHxq4ierSqzlJMqnVz'
     request = service.files().get_media(fileId=file_id)
     fh = io.BytesIO()
     downloader = MediaIoBaseDownload(fh, request)
