@@ -1,9 +1,9 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from datetime import datetime, timedelta
 import os
 import sys
-
 
 # Add the scripts directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../scripts'))
@@ -19,24 +19,28 @@ default_args = {
 }
 
 dag = DAG(
-    'upload_to_hdfs',
+    'transform_to_parquet',
     default_args=default_args,
-    description='Convert CSV to Parquet and upload to HDFS',
+    description='Transform CSV files to Parquet and upload to HDFS (Transformed Zone)',
     schedule_interval=None,
 )
 
 
-def upload_files():
-    import sys
-    sys.path.append('/usr/local/airflow/scripts')
-    from upload_data import upload_files_to_hdfs
-    upload_files_to_hdfs()
+def transform_files():
+    from transform_to_parquet import transform_and_upload_to_hdfs
+    transform_and_upload_to_hdfs()
 
 
 t1 = PythonOperator(
-    task_id='upload_files_to_hdfs',
-    python_callable=upload_files,
+    task_id='transform_files_to_parquet',
+    python_callable=transform_files,
     dag=dag,
 )
 
-t1
+t2 = TriggerDagRunOperator(
+    task_id='trigger_load_to_hive_dag',
+    trigger_dag_id='load_to_hive',
+    dag=dag,
+)
+
+t1 >> t2
