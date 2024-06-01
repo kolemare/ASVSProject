@@ -54,7 +54,10 @@ COPY config/hadoop/start-datanode.sh /usr/local/bin/start-datanode.sh
 
 # Add log4j.properties for HBase and Hadoop
 COPY config/hadoop/log4j.properties $HADOOP_HOME/etc/hadoop/log4j.properties
-COPY config/hbase/log4j.properties $HBASE_HOME/conf/log4j.properties
+COPY config/hbase/log4j.properties $HBASE_HOME/conf/hbase-log4j.properties
+
+# Make the scripts executable
+RUN chmod +x /usr/local/bin/start-namenode.sh /usr/local/bin/start-datanode.sh
 
 # Format HDFS namenode
 RUN $HADOOP_HOME/bin/hdfs namenode -format

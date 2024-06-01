@@ -1,18 +1,10 @@
-import jaydebeapi
-import pandas as pd
-
-# JDBC connection properties
-driver = 'org.apache.hive.jdbc.HiveDriver'
-url = 'jdbc:hive2://hive-server:10000/default'
-driver_path = '/opt/airflow/jdbc/hive-jdbc-standalone.jar'
-
+from airflow.providers.apache.hive.hooks.hive import HiveServer2Hook
 
 def create_hive_table():
-    conn = jaydebeapi.connect(driver, url, ['username', 'password'], driver_path)
-    cursor = conn.cursor()
-    cursor.execute("""
+    hook = HiveServer2Hook(hiveserver2_conn_id='hive_server2_default')
+    query = """
     CREATE TABLE IF NOT EXISTS climate_data (
-        date STRING,
+        `date` STRING,
         hour STRING,
         prcp FLOAT,
         stp FLOAT,
@@ -40,22 +32,13 @@ def create_hive_table():
         elvt FLOAT
     )
     STORED AS PARQUET
-    LOCATION '/data/curated';
-    """)
-    cursor.close()
-    conn.close()
+    LOCATION '/data/curated'
+    """
+    hook.run(sql=query)
     print("Hive table created successfully.")
 
-
 def load_data_to_hive():
-    conn = jaydebeapi.connect(driver, url, ['username', 'password'], driver_path)
-    cursor = conn.cursor()
-    cursor.execute("LOAD DATA INPATH '/data/transform' INTO TABLE climate_data")
-    cursor.close()
-    conn.close()
+    hook = HiveServer2Hook(hiveserver2_conn_id='hive_server2_default')
+    query = "LOAD DATA INPATH '/data/transform' INTO TABLE climate_data"
+    hook.run(sql=query)
     print("Data loaded into Hive table successfully.")
-
-
-if __name__ == "__main__":
-    create_hive_table()
-    load_data_to_hive()

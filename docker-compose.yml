@@ -1,4 +1,3 @@
-version: '3'
 services:
   postgres:
     image: postgres:13
@@ -12,186 +11,199 @@ services:
     networks:
       - hadoop-net
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "airflow" ]
+      test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
       retries: 5
       start_period: 5s
     restart: always
-    deploy:
-      resources:
-        limits:
-          memory: 1g
-
-  hive-metastore:
-    build: .
-    container_name: hive-metastore
-    hostname: hive-metastore
-    environment:
-      - HIVE_HOME=${HIVE_HOME}
-      - HADOOP_HOME=${HADOOP_HOME}
-      - HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
-      - JAVA_HOME=${JAVA_HOME}
-    volumes:
-      - ./config/hadoop:/usr/local/hadoop/etc/hadoop
-      - ./config/hive:/usr/local/hive/conf
-    depends_on:
-      - namenode
-      - datanode1
-      - datanode2
-      - datanode3
-      - datanode4
-      - datanode5
-      - datanode6
-      - datanode7
-      - datanode8
-    command: >
-      bash -c "
-      ${HADOOP_HOME}/bin/hdfs dfs -mkdir -p /tmp &&
-      ${HADOOP_HOME}/bin/hdfs dfs -mkdir -p /user/hive/warehouse &&
-      ${HADOOP_HOME}/bin/hdfs dfs -chmod g+w /tmp &&
-      ${HADOOP_HOME}/bin/hdfs dfs -chmod g+w /user/hive/warehouse &&
-      ${HIVE_HOME}/bin/schematool -dbType derby -initSchema &&
-      ${HIVE_HOME}/bin/hive --service metastore
-      "
-    ports:
-      - "9083:9083"
-    networks:
-      - hadoop-net
-
-  hive-server:
-    image: apache/hive:4.0.0
-    container_name: hive-server
-    environment:
-      SERVICE_NAME: hiveserver2
-      SERVICE_OPTS: >
-        -Dhive.metastore.uris=thrift://hive-metastore:9083
-      IS_RESUME: "true"
-    ports:
-      - "10000:10000"
-      - "10002:10002"
-    volumes:
-      - warehouse:/opt/hive/data/warehouse
-    networks:
-      - hadoop-net
-    depends_on:
-      - hive-metastore
 
   namenode:
     build: .
     container_name: namenode
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     ports:
       - "9870:9870"
+      - "9000:9000"
     networks:
       - hadoop-net
-    command: "/usr/local/hadoop/bin/hdfs namenode"
+    command: "bash -c '/usr/local/hadoop/bin/hdfs namenode'"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9870 || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   datanode1:
     build: .
     container_name: datanode1
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - namenode
     command: "/usr/local/hadoop/bin/hdfs datanode"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 50010"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   datanode2:
     build: .
     container_name: datanode2
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - namenode
     command: "/usr/local/hadoop/bin/hdfs datanode"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 50010"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   datanode3:
     build: .
     container_name: datanode3
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - namenode
     command: "/usr/local/hadoop/bin/hdfs datanode"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 50010"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   datanode4:
     build: .
     container_name: datanode4
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - namenode
     command: "/usr/local/hadoop/bin/hdfs datanode"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 50010"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   datanode5:
     build: .
     container_name: datanode5
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - namenode
     command: "/usr/local/hadoop/bin/hdfs datanode"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 50010"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   datanode6:
     build: .
     container_name: datanode6
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - namenode
     command: "/usr/local/hadoop/bin/hdfs datanode"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 50010"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   datanode7:
     build: .
     container_name: datanode7
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - namenode
     command: "/usr/local/hadoop/bin/hdfs datanode"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 50010"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   datanode8:
     build: .
     container_name: datanode8
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - namenode
     command: "/usr/local/hadoop/bin/hdfs datanode"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 50010"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   resourcemanager:
     build: .
     container_name: resourcemanager
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     ports:
@@ -199,103 +211,175 @@ services:
       - "8031:8031"
     networks:
       - hadoop-net
+    depends_on:
+      - namenode
     command: "/usr/local/hadoop/bin/yarn resourcemanager"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8088"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   nodemanager1:
     build: .
     container_name: nodemanager1
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - resourcemanager
     command: "/usr/local/hadoop/bin/yarn nodemanager"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8042"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   nodemanager2:
     build: .
     container_name: nodemanager2
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - resourcemanager
     command: "/usr/local/hadoop/bin/yarn nodemanager"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8042"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   nodemanager3:
     build: .
     container_name: nodemanager3
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - resourcemanager
     command: "/usr/local/hadoop/bin/yarn nodemanager"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8042"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   nodemanager4:
     build: .
     container_name: nodemanager4
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - resourcemanager
     command: "/usr/local/hadoop/bin/yarn nodemanager"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8042"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   nodemanager5:
     build: .
     container_name: nodemanager5
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - resourcemanager
     command: "/usr/local/hadoop/bin/yarn nodemanager"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8042"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   nodemanager6:
     build: .
     container_name: nodemanager6
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - resourcemanager
     command: "/usr/local/hadoop/bin/yarn nodemanager"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8042"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   nodemanager7:
     build: .
     container_name: nodemanager7
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - resourcemanager
     command: "/usr/local/hadoop/bin/yarn nodemanager"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8042"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   nodemanager8:
     build: .
     container_name: nodemanager8
     environment:
-      - HADOOP_HOME=${HADOOP_HOME}
-      - JAVA_HOME=${JAVA_HOME}
+      - HADOOP_HOME=/usr/local/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
     volumes:
       - ./config/hadoop:/usr/local/hadoop/etc/hadoop
     networks:
       - hadoop-net
+    depends_on:
+      - resourcemanager
     command: "/usr/local/hadoop/bin/yarn nodemanager"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8042"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   redis:
     image: redis:7.2.5
@@ -305,7 +389,7 @@ services:
     networks:
       - hadoop-net
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 30s
       retries: 50
@@ -325,14 +409,15 @@ services:
       AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
       AIRFLOW__CORE__FERNET_KEY: ''
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'  # Set this to false
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
       AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+      AIRFLOW_CONN_HIVE_SERVER2_DEFAULT: hiveserver2://hive-server2:10000/default
     ports:
       - "8080:8080"
     healthcheck:
-      test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -371,9 +456,10 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
       AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+      AIRFLOW_CONN_HIVE_SERVER2_DEFAULT: hiveserver2://hive-server2:10000/default
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     healthcheck:
-      test: [ "CMD", "curl", "--fail", "http://localhost:8974/health" ]
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -412,6 +498,7 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
       AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+      AIRFLOW_CONN_HIVE_SERVER2_DEFAULT: hiveserver2://hive-server2:10000/default
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
       DUMB_INIT_SETSID: "0"
     healthcheck:
@@ -505,11 +592,74 @@ services:
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+      AIRFLOW_CONN_HIVE_SERVER2_DEFAULT: hiveserver2://hive-server2:10000/default
     user: "0:0"
     volumes:
       - .:/sources
     networks:
       - hadoop-net
+
+  hive-metastore:
+    image: apache/hive:4.0.0-alpha-2
+    container_name: hive-metastore
+    environment:
+      - SERVICE_NAME=metastore
+      - HIVE_HOME=/opt/hive
+      - HADOOP_HOME=/opt/hadoop
+      - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+      - SERVICE_OPTS=-Dhive.metastore.uris=thrift://hive-metastore:9083
+    volumes:
+      - warehouse:/opt/hive/data/warehouse
+      - ./config/hadoop:/opt/hadoop/etc/hadoop
+    ports:
+      - "9083:9083"
+    networks:
+      - hadoop-net
+    depends_on:
+      - namenode
+      - datanode1
+      - datanode2
+      - datanode3
+      - datanode4
+      - datanode5
+      - datanode6
+      - datanode7
+      - datanode8
+    command: >
+      bash -c "
+      /opt/hadoop/bin/hdfs dfs -mkdir -p /tmp &&
+      /opt/hadoop/bin/hdfs dfs -mkdir -p /user/hive/warehouse &&
+      /opt/hadoop/bin/hdfs dfs -chmod g+w /tmp &&
+      /opt/hadoop/bin/hdfs dfs -chmod g+w /user/hive/warehouse &&
+      /opt/hive/bin/schematool -dbType derby -initSchema &&
+      /opt/hive/bin/hive --service metastore
+      "
+    restart: always
+
+  hive-server2:
+    image: apache/hive:4.0.0-alpha-2
+    container_name: hive-server2
+    environment:
+      - SERVICE_NAME=hiveserver2
+      - HIVE_HOME=/opt/hive
+      - HADOOP_HOME=/opt/hadoop
+      - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+      - SERVICE_OPTS=-Dhive.metastore.uris=thrift://hive-metastore:9083
+    volumes:
+      - warehouse:/opt/hive/data/warehouse
+      - ./config/hadoop:/opt/hadoop/etc/hadoop
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    networks:
+      - hadoop-net
+    depends_on:
+      - hive-metastore
+    command: >
+      bash -c "
+      /opt/hive/bin/hive --service hiveserver2
+      "
+    restart: always
 
 networks:
   hadoop-net:
