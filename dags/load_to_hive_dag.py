@@ -1,5 +1,6 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from datetime import datetime, timedelta
 import os
 import sys
@@ -24,16 +25,13 @@ dag = DAG(
     schedule_interval=None,
 )
 
-
 def create_hive_table_task():
     from load_to_hive import create_hive_table
     create_hive_table()
 
-
 def load_data_to_hive_task():
     from load_to_hive import load_data_to_hive
     load_data_to_hive()
-
 
 create_table_task = PythonOperator(
     task_id='create_hive_table',
@@ -47,4 +45,10 @@ load_data_task = PythonOperator(
     dag=dag,
 )
 
-create_table_task >> load_data_task
+trigger_avg_temp_dag = TriggerDagRunOperator(
+    task_id='trigger_calculate_avg_temp_dag',
+    trigger_dag_id='calculate_avg_temp_dag',
+    dag=dag,
+)
+
+create_table_task >> load_data_task >> trigger_avg_temp_dag
