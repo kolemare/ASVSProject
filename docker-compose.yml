@@ -429,7 +429,6 @@ services:
       - ./config:/opt/airflow/config
       - ./plugins:/opt/airflow/plugins
       - ./dataset:/opt/airflow/dataset
-      - ./hqls:/opt/airflow/hqls
     command: webserver
     networks:
       - hadoop-net
@@ -472,7 +471,6 @@ services:
       - ./config:/opt/airflow/config
       - ./plugins:/opt/airflow/plugins
       - ./dataset:/opt/airflow/dataset
-      - ./hqls:/opt/airflow/hqls
     command: scheduler
     networks:
       - hadoop-net
@@ -518,7 +516,6 @@ services:
       - ./config:/opt/airflow/config
       - ./plugins:/opt/airflow/plugins
       - ./dataset:/opt/airflow/dataset
-      - ./hqls:/opt/airflow/hqls
     command: celery worker
     networks:
       - hadoop-net
