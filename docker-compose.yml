@@ -661,6 +661,33 @@ services:
       "
     restart: always
 
+  zookeeper:
+    image: bitnami/zookeeper:3.7.0
+    container_name: zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - "2181:2181"
+    networks:
+      - hadoop-net
+
+  kafka:
+    image: bitnami/kafka:3.7.0
+    container_name: kafka
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    ports:
+      - "9092:9092"
+    networks:
+      - hadoop-net
+    depends_on:
+      - zookeeper
+
 networks:
   hadoop-net:
     driver: bridge

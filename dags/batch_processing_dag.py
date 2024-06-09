@@ -12,7 +12,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../scripts'))
 # Load configuration
 with open(os.path.join(os.path.dirname(__file__), 'config.json')) as config_file:
     config = json.load(config_file)
-batches = config.get("batches", 3)
+batches = config.get("batches", 6)
 
 default_args = {
     'owner': 'airflow',

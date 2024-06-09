@@ -10,3 +10,4 @@ token.json
 !/logs/.gitkeep
 
 dags/__pycache__/
+dags/apikey.json
