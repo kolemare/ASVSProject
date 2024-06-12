@@ -688,6 +688,25 @@ services:
     depends_on:
       - zookeeper
 
+  kafka-consumer:
+    container_name: kafka-consumer
+    build:
+      context: .
+      dockerfile: Consumer.dockerfile
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: 'kafka:9092'
+      KAFKA_TOPIC: 'weather_data'
+      HIVE_HOST: 'hive-server2'
+      HIVE_PORT: 10000
+      HIVE_DATABASE: 'default'
+      HIVE_USER: 'hiveuser'
+      HIVE_PASSWORD: 'hivepassword'
+    depends_on:
+      - kafka
+      - hive-server2
+    networks:
+      - hadoop-net
+
 networks:
   hadoop-net:
     driver: bridge
