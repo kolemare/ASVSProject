@@ -427,7 +427,7 @@ services:
       - ./scripts:/opt/airflow/scripts
       - ./logs:/opt/airflow/logs
       - ./config:/opt/airflow/config
-      - ./plugins:/opt/airflow/plugins
+      - ./results:/opt/airflow/results
       - ./dataset:/opt/airflow/dataset
     command: webserver
     networks:
@@ -469,7 +469,7 @@ services:
       - ./scripts:/opt/airflow/scripts
       - ./logs:/opt/airflow/logs
       - ./config:/opt/airflow/config
-      - ./plugins:/opt/airflow/plugins
+      - ./results:/opt/airflow/results
       - ./dataset:/opt/airflow/dataset
     command: scheduler
     networks:
@@ -514,7 +514,7 @@ services:
       - ./scripts:/opt/airflow/scripts
       - ./logs:/opt/airflow/logs
       - ./config:/opt/airflow/config
-      - ./plugins:/opt/airflow/plugins
+      - ./results:/opt/airflow/results
       - ./dataset:/opt/airflow/dataset
     command: celery worker
     networks:
@@ -574,8 +574,8 @@ services:
           echo "Please follow the instructions to increase amount of resources available:"
           echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
         fi
-        mkdir -p /sources/logs /sources/dags /sources/plugins
-        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        mkdir -p /sources/logs /sources/dags /sources/results
+        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,results}
         exec /entrypoint airflow version
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor

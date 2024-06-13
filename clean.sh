@@ -12,11 +12,13 @@ delete_except_gitkeep() {
 
 # Parse arguments
 DELETE_LOGS=false
+DELETE_RESULTS=false
 DELETE_DATASET=false
 DELETE_VENV=false
 
 if [ $# -eq 0 ]; then
     DELETE_LOGS=true
+    DELETE_RESULTS=true
 fi
 
 for arg in "$@"
@@ -32,12 +34,14 @@ do
         ;;
         --all)
         DELETE_LOGS=true
+        DELETE_RESULTS=true
         DELETE_DATASET=true
         DELETE_VENV=true
         shift
         ;;
         *)
         DELETE_LOGS=true
+        DELETE_RESULTS=true
         ;;
     esac
 done
@@ -45,6 +49,10 @@ done
 # Perform deletions based on flags
 if [ "$DELETE_LOGS" = true ]; then
     delete_except_gitkeep "logs"
+fi
+
+if [ "$DELETE_RESULTS" = true ]; then
+    delete_except_gitkeep "results"
 fi
 
 if [ "$DELETE_DATASET" = true ]; then

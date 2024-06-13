@@ -1,5 +1,6 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from datetime import datetime, timedelta
 import os
 import sys
@@ -35,3 +36,11 @@ aggregate_task = PythonOperator(
     python_callable=aggregate_results,
     dag=dag,
 )
+
+trigger_visualization_dag = TriggerDagRunOperator(
+    task_id='trigger_visualization_dag',
+    trigger_dag_id='hive_visualization_dag',
+    dag=dag,
+)
+
+aggregate_task >> trigger_visualization_dag
